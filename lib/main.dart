@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import './BaseAppBar.dart';
+import './Settings.dart';
+import './Login.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,11 +12,53 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _temp = "HELLO WORLD!";
+  String _title = "PLEASE LOGIN!";
+  bool auth = false;
 
-  void _click(String temp) {
+  Widget _screen;
+  Settings _settings;
+  Login _login;
+
+  _MyAppState() {
+    this._settings = new Settings();
+    this._login = new Login(this._clickLogin,);
+    this._screen = this._login;
+  }
+
+  void setAuth() {
     setState(() {
-      this._temp = temp;
+      if (this.auth == false) {
+        this._screen = this._login;
+      } else {
+        this._screen = this._settings;
+      }
+    });
+  }
+
+  void _clickLogin() {
+    setState(() {
+      if (Login.username == "Achintha" && Login.password == "password") {
+        this.auth = true;
+        this.setAuth();
+      } else {
+        print('Wrong Username or Password!');
+        //print (this.userName);
+
+      }
+    });
+  }
+
+  void _clickHome() {
+    setState(() {
+      this.auth = !this.auth;
+      this.setAuth();
+    });
+  }
+
+  void _clickLogout() {
+    setState(() {
+     this.auth = false;
+     this.setAuth(); 
     });
   }
 
@@ -23,23 +67,23 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: BaseAppBar(
-          title: Text('App Bar Demo'),
+          title: Text(this._title),
           appBar: AppBar(),
           widgets: <Widget>[
             new IconButton(
               icon: new Icon(Icons.home),
-              onPressed: () => this._click("HELLO WORLD!"),
+              onPressed: () => this._clickHome(),
             ),
             new IconButton(
-              icon: new Icon(Icons.school),
-              onPressed: () => this._click("SCHOOL IS CLICKED!"),
+              icon: new Icon(Icons.exit_to_app),
+              onPressed: !(this.auth) ? null : () => this._clickLogout(),
             )
           ],
         ),
         body: new Container(
-          padding: EdgeInsets.all(32),
+          padding: EdgeInsets.all(20),
           child: new Center(
-            child: new Text(this._temp),
+            child: this._screen,
           ),
         ),
       ),
